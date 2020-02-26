@@ -181,13 +181,6 @@ void convert_file(const char *filename) {
 	const char *ext_str = "bak";
 	read_file_result_t xml_file = read_file(filename);
 	
-	char *backup_name = (char*)malloc(strlen(filename) + strlen(ext_str));
-	sprintf(backup_name, "%s.%s", filename, ext_str);
-	if (!write_file(backup_name, xml_file.data, xml_file.size)) {
-		fprintf(stderr, "Aborting.\n");
-		exit(1);
-	}
-
 	binary_stream_t* stream = &the_stream;
 	stream->data = xml_file.data;
 	stream->size = xml_file.size;
@@ -201,6 +194,13 @@ void convert_file(const char *filename) {
 		else if (peek != 'C') {
 			fprintf(stderr, "File %s has unknown file format\n", filename);
 			return;
+		}
+
+		char* backup_name = (char*)malloc(strlen(filename) + strlen(ext_str));
+		sprintf(backup_name, "%s.%s", filename, ext_str);
+		if (!write_file(backup_name, xml_file.data, xml_file.size)) {
+			fprintf(stderr, "Aborting.\n");
+			exit(1);
 		}
 
 		char * header = read_cstring(stream);
